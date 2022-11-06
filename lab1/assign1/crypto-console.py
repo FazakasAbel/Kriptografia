@@ -12,7 +12,10 @@ import random
 from crypto import (encrypt_caesar, decrypt_caesar,
                     encrypt_vigenere, decrypt_vigenere,
                     generate_private_key, create_public_key,
-                    encrypt_mh, decrypt_mh)
+                    encrypt_mh, decrypt_mh, 
+                    encrypt_scytale, decrypt_scytale,
+                    encrypt_railfence, decrypt_railfence,
+                    encrypt_binary_scytale, decrypt_binary_scytale)
 
 
 #############################
@@ -21,7 +24,7 @@ from crypto import (encrypt_caesar, decrypt_caesar,
 
 def get_tool():
     print("* Tool *")
-    return _get_selection("(C)aesar, (V)igenere or (M)erkle-Hellman? ", "CVM")
+    return _get_selection("(C)aesar, (V)igenerem, (S)cytale, (B)inary Scytale or (R)ailfence? ", "CVSRB")
 
 
 def get_action():
@@ -70,6 +73,11 @@ def set_output(output, binary=False):
             print("Writing data to {}...".format(filename))
             outfile.write(output)
 
+def clear_num_rails(str):
+    return int(str)
+
+def clear_circumference(str):
+    return int(str)
 
 def _get_selection(prompt, options):
     choice = input(prompt).upper()
@@ -130,6 +138,45 @@ def run_vigenere():
 
     set_output(output)
 
+def run_scytale():
+    action = get_action()
+    encrypting = action == 'E'
+    data = get_input(binary=False)
+    
+    circumference = clear_circumference(input("Circumference? "))
+
+    print("{}crypting {} using Scytale cipher and circumference {}...".format('En' if encrypting else 'De', data, circumference))
+
+    output = (encrypt_scytale if encrypting else decrypt_scytale)(data, circumference)
+
+    set_output(output)
+
+def run_railfence():
+    action = get_action()
+    encrypting = action == 'E'
+    data = get_input(binary=False)
+    
+    num_rails = clear_num_rails(input("Number of rails? "))
+
+    print("{}crypting {} using Railfence cipher and number of rails {}...".format('En' if encrypting else 'De', data, num_rails))
+
+    output = (encrypt_railfence if encrypting else decrypt_railfence)(data, num_rails)
+
+    set_output(output)
+
+def run_byte_scytale():
+    action = get_action()
+    encrypting = action == 'E'
+    data = get_input(binary=True)
+    
+    circumference = clear_circumference(input("Circumference? "))
+
+    print("{}crypting {} using Scytale cipher and circumference {}...".format('En' if encrypting else 'De', data, circumference))
+
+    output = (encrypt_binary_scytale if encrypting else decrypt_binary_scytale)(data, circumference)
+
+    set_output(output, True)
+
 
 def run_merkle_hellman():
     action = get_action()
@@ -175,7 +222,9 @@ def run_suite():
     commands = {
         'C': run_caesar,         # Caesar Cipher
         'V': run_vigenere,       # Vigenere Cipher
-        'M': run_merkle_hellman  # Merkle-Hellman Knapsack Cryptosystem
+        'S': run_scytale,       # Scytale
+        'R': run_railfence,      # Railfence
+        'B': run_byte_scytale   # Byte Scytale
     }
     commands[tool]()
 
